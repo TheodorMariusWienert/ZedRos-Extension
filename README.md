@@ -36,7 +36,7 @@ To install this project you need to do the following (analog to [instructions](h
 ```
 rosdep install gives some errors  but can be ignored if they don't affect the code
 
-Now you need to modify the zed2.yaml and place the path to your TensorRT engine in the file. And specify to use a custom detector. Also you can enter the names of the classes you want to detect here.
+Now you need to modify the zed2.yaml and place the path to your TensorRT engine in the file. And specify to use a custom detector. Also you can enter the names of the classes you want to detect here. The weights of a trained YOLOv5s model is in this [folder](Trained_weights_robots_humans/)
 
 To use your custom Yolov5 model you need to either export it to a FP32 engine with the export functionality of [YOLOv5](https://github.com/ultralytics/yolov5). Or when you want to use a FP16 engine you need to first export it to Onnx format with  [YOLOv5](https://github.com/ultralytics/yolov5) and than use the [YOLOv5-TensorRT](https://github.com/noahmr/yolov5-tensorrt) functionality to export it to a FP16 TensorRT engine.
 
