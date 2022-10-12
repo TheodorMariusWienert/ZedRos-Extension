@@ -26,14 +26,15 @@ To install this package you need first to install the following libaries:
 And a ZED2 was used. Further a YOLOv5s model was use as a FP16 and FP32 TensorRT Engine.
 
 To install this project you need to do the following (analog to [instructions](https://www.stereolabs.com/docs/ros/) given by stereolabs):
-
+```
   cd ~/catkin_ws/src
   git clone --recursive https://github.com/TheodorMariusWienert/ZedRos-Extension
   cd ../
-  rosdep install --from-paths src --ignore-src -r -y    # This gives some errors sometime but can be ignored if they dont affect the code
+  rosdep install --from-paths src --ignore-src -r -y    
   catkin_make -DCMAKE_BUILD_TYPE=Release
   source ./devel/setup.bash
-
+```
+rosdep install gives some errors  but can be ignored if they don't affect the code
 
 Now you need to modify the zed2.yaml and place the path to your TensorRT engine in the file. And specify to use a custom detector. Also you can enter the names of the classes you want to detect here.
 
