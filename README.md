@@ -27,9 +27,8 @@ And a ZED2 was used. Further a YOLOv5s model was use as a FP16 and FP32 TensorRT
 ## Installation
 To install this project you need to do the following (analog to [instructions](https://www.stereolabs.com/docs/ros/) given by stereolabs):
 ```
-  cd ~/catkin_ws/src
   git clone --recursive https://github.com/TheodorMariusWienert/ZedRos-Extension
-  cd ../
+  cd ZedRos-Extension
   rosdep install --from-paths src --ignore-src -r -y    
   catkin_make -DCMAKE_BUILD_TYPE=Release
   source ./devel/setup.bash
@@ -50,7 +49,7 @@ For visulaization use:
 roslaunch zed_display_rviz display_zed2.launch
 ```
 
-To see how the [zed-ros-wrapper](https://github.com/stereolabs/zed-ros-wrapper) see this page of [stereolabs](https://www.stereolabs.com/docs/ros/)
+To see how the [zed-ros-wrapper](https://github.com/stereolabs/zed-ros-wrapper) works, see this page of [stereolabs](https://www.stereolabs.com/docs/ros/)
 ## To record execution times and at subscriber site latencie:
 To record times you need to edit zed_wrapper_nodelet.hpp and edit the pathVariable there and also set time to recording to true
 To record times at subscriber site you need to edit the  zed_obj_det_sub and change the bools to true also set the path according to your preferences(The positional data which the subscriber receives can also be recorded and saved to a file)
