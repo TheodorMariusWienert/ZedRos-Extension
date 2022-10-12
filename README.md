@@ -7,6 +7,7 @@ How the extension was implemented is based on [ZED-YOLOv5]( https://github.com/n
 
 
 To install this package you need first to install the following libaries:
+
 ##Libraries needed
 - Cuda >10.02
 - Tensorrt  > 8
@@ -26,12 +27,12 @@ And a ZED2 was used. Further a YOLOv5s model was use as a FP16 and FP32 TensorRT
 
 To install this project you need to do the following (analog to [instructions](https://www.stereolabs.com/docs/ros/) given by stereolabs):
 
-$cd ~/catkin_ws/src
-$ git clone --recursive https://github.com/TheodorMariusWienert/ZedRos-Extension
-$ cd ../
-$ rosdep install --from-paths src --ignore-src -r -y    # This gives some errors sometime but can be ignored if they dont affect the code
-$ catkin_make -DCMAKE_BUILD_TYPE=Release
-$ source ./devel/setup.bash
+  cd ~/catkin_ws/src
+  git clone --recursive https://github.com/TheodorMariusWienert/ZedRos-Extension
+  cd ../
+  rosdep install --from-paths src --ignore-src -r -y    # This gives some errors sometime but can be ignored if they dont affect the code
+  catkin_make -DCMAKE_BUILD_TYPE=Release
+  source ./devel/setup.bash
 
 
 Now you need to modify the zed2.yaml and place the path to your TensorRT engine in the file. And specify to use a custom detector. Also you can enter the names of the classes you want to detect here.
