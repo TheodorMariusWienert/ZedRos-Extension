@@ -262,7 +262,7 @@ void ZEDWrapperNodelet::onInit()
 
     if(mObjDetModel == sl::DETECTION_MODEL::CUSTOM_BOX_OBJECTS){
         start_custom_detection();
-        std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+        std::this_thread::sleep_for(std::chrono::milliseconds(4000));//To wait for the initalization 
     }
    
 
@@ -627,7 +627,7 @@ void ZEDWrapperNodelet::onInit()
 
 //Custom Detection
 
-std::vector<sl::uint2> cvt(cv::Mat& img, const cv::Rect &bbox_in){
+std::vector<sl::uint2> cvt(cv::Mat& img, const cv::Rect &bbox_in){ //converts the format of the bbox
     std::vector<sl::uint2> bbox_out(4);
      /* if image is converted before ingesting it into yolov5tensorrt
   
@@ -831,6 +831,7 @@ void ZEDWrapperNodelet::readParameters()
             mObjDetModel = sl::DETECTION_MODEL::CUSTOM_BOX_OBJECTS;
             mNhNs.getParam("object_detection/engine_path", mEnginePath); //set Path for the engine to be used
             mNhNs.getParam("object_detection/floor_is_even", mFloorIsEven); //set Path for the engine to be used
+            mNhNs.getParam("object_detection/customClassesNames", customClasses); //gets the name for the classes
         }
 
         //<--------
@@ -3599,7 +3600,7 @@ void ZEDWrapperNodelet::device_poll_thread_func()
             }
 
             mObjDetMutex.lock();
-            if (mObjDetRunning && objDetSubnumber > 0||recordTimes) {//alawys procces when custom detection änden TODO rusnemen
+            if (mObjDetRunning && objDetSubnumber > 0||recordTimes) {
                 
                 if(mObjDetModel==sl::DETECTION_MODEL::CUSTOM_BOX_OBJECTS){
                     if(mConnStatus == sl::ERROR_CODE::SUCCESS&&mPosTrackingActivated){
@@ -4489,9 +4490,14 @@ void ZEDWrapperNodelet::processDetectedObjects(ros::Time t)
         if(mObjDetModel==sl::DETECTION_MODEL::CUSTOM_BOX_OBJECTS){ //custom Detection sets the right name
            //std::string string_Classes =  sl::toString(data.label).c_str();
           // NODELET_INFO_STREAM("Raw : " << data.raw_label);
-          if(data.raw_label>0 &&data.raw_label<customClasses.size())
-           objMsg->objects[idx].label = customClasses[data.raw_label];
-           objMsg->objects[idx].sublabel = customClasses[data.raw_label];
+            if(data.raw_label>0 &&data.raw_label<customClasses.size()){
+                objMsg->objects[idx].label = customClasses[data.raw_label];
+                objMsg->objects[idx].sublabel = customClasses[data.raw_label];
+            }
+            else{
+                objMsg->objects[idx].label = "Unknown";
+                objMsg->objects[idx].sublabel = "Unknown";
+            }
         }
         else{
             objMsg->objects[idx].label = sl::toString(data.label).c_str();
@@ -4567,9 +4573,9 @@ void ZEDWrapperNodelet::processDetectedObjects(ros::Time t)
         }
         if(warm_up>=100&&timestamp_idx<1000){
         //For custom Detection Diagnostics
-        double img_timestamp_ms=timestamp_img.data_ns;
+        double img_timestamp_ns=timestamp_img.data_ns;
       
-        double diff2 =retrieve_start.time_since_epoch().count()-img_timestamp_ms;//Time since image retrival
+        double diff2 =retrieve_start.time_since_epoch().count()-img_timestamp_ns;//Time since image retrival
         timeForDetection[0][timestamp_idx]=diff2/(1e6);
 
         double diff =retrieve_finish.time_since_epoch().count() - retrieve_start.time_since_epoch().count();//The time it took to retrieve the image from the ZED-SDK
@@ -4593,20 +4599,16 @@ void ZEDWrapperNodelet::processDetectedObjects(ros::Time t)
         //diff =retrieve_3d_objects.time_since_epoch().count() - ingest_detect_total_start.time_since_epoch().count();//The total time from the moment of retrieving the image from the ZED-SDK to ingest the detections back into the ZED-SDK 
        // timeForDetection[7][timestamp_idx]=diff/1e6;
 
-        diff =finsihed.time_since_epoch().count() - ingest_detect_total_start.time_since_epoch().count();//The total time from the moment from the first image timestamp to publishing the ros messages with the detected objects
-        timeForDetection[7][timestamp_idx]=diff/1e6+diff2;
-
-        
-
-
-        timeForDetection[8][timestamp_idx]=img_timestamp_ms;
+        diff =finsihed.time_since_epoch().count() - img_timestamp_ns;//The total time from the moment from the first image timestamp to publishing the ros messages with the detected objects
+        timeForDetection[7][timestamp_idx]=diff/1e6;
+        timeForDetection[8][timestamp_idx]=img_timestamp_ns/1e6;
         timestamp_idx++;
-    }
-    if(timestamp_idx==1000){ //
-        std::ofstream fileTimeDetect;
-        fileTimeDetect.open ("/home/theubuntu/ZedRos_CustomDetection/YoloV5 ResultsonTest/Retrieve+Ingest+Message+Publish/timesForDetection.txt");
+        }
+        if(timestamp_idx==1000){ //
+            std::ofstream fileTimeDetect;
+            fileTimeDetect.open (pathFileForTimes);
         
-        for(int i = 0; i < timestamp_idx; ++i){
+            for(int i = 0; i < timestamp_idx; ++i){
             for(int j =0;j<sizeof(timeForDetection)/sizeof(timeForDetection[0]);j++)
             {
                 fileTimeDetect<<std::to_string(timeForDetection[j][i])+",";
@@ -4898,17 +4900,15 @@ void  ZEDWrapperNodelet::start_custom_detection()
         {
             ROS_ERROR_STREAM( "init() failed: " << yolov5::result_to_string(result));
         }
-        /*
-            Load the engine from file.
-        */
-        result = detector.loadEngine(mEnginePath);
+        
+        result = detector.loadEngine(mEnginePath); //Loads the gine from the path in zed2.yaml
         if(result != yolov5::RESULT_SUCCESS)
         {
             ROS_ERROR_STREAM( "loadEngine() failed: " << yolov5::result_to_string(result));
         }
         
         
-    detector.setScoreThreshold(mObjDetConfidence/100);//set COnfidence Treshhold
+    detector.setScoreThreshold(mObjDetConfidence/100);//set Confidence Treshhold also an NMS treshold could be set if wanted
     
     if(cuCtxGetCurrent(&cuContext) != 0)
     {
@@ -4920,19 +4920,19 @@ void  ZEDWrapperNodelet::start_custom_detection()
         std::cout << "Could not obtain CUdevice from CUDA context" << std::endl;
         
     }
-    engineLoaded=detector.isEngineLoaded();
-    mZedParams.sdk_cuda_ctx = cuContext;
+    engineLoaded=detector.isEngineLoaded(); 
+    mZedParams.sdk_cuda_ctx = cuContext;//set the cucontext of the zed to the same as for the yolov5tensoort
     mZedParams.sdk_gpu_id = cuDevice;
     NODELET_INFO_STREAM(" Finished the process of starting Custom Detection");
 }
-void ZEDWrapperNodelet::initalizeMats(){
-    NODELET_INFO_STREAM("initalizeMats : " );
+void ZEDWrapperNodelet::initalizeMats(){ //initalize the mats
+    //NODELET_INFO_STREAM("initalizeMats : " );
     left_sl = sl::Mat((mCamWidth, mCamHeight),sl::MAT_TYPE::U8_C4, sl::MEM::CPU);
-   // imageCv =cv::Mat(cv::Size(left_sl.getWidth(), left_sl.getHeight()), CV_8UC4, left_sl.getPtr<sl::uchar1>(sl::MEM::CPU));
+   
     
 }
-void ZEDWrapperNodelet::initalizeMats2(){
-    NODELET_INFO_STREAM("initalizeMats2 " );
+void ZEDWrapperNodelet::initalizeMats2(){//initalize the mats
+    //NODELET_INFO_STREAM("initalizeMats2 " );
     imageCv =cv::Mat(cv::Size(left_sl.getWidth(), left_sl.getHeight()), CV_8UC4, left_sl.getPtr<sl::uchar1>(sl::MEM::CPU));
     
 }
@@ -4941,8 +4941,8 @@ void ZEDWrapperNodelet::ingestImages()
     if(detector.isEngineLoaded()){
         if(initMats) initalizeMats();
         retrieve_start = std::chrono::high_resolution_clock::now();
-        mCamDataMutex.lock();
-        mZed.retrieveImage(left_sl, sl::VIEW::LEFT);
+        mCamDataMutex.lock(); 
+        mZed.retrieveImage(left_sl, sl::VIEW::LEFT);//retrieve the image from the sdk
         mCamDataMutex.unlock();
 
         timestamp_img = mZed.getTimestamp(sl::TIME_REFERENCE::IMAGE);
@@ -4953,14 +4953,14 @@ void ZEDWrapperNodelet::ingestImages()
         }
            
         
-        cv::cvtColor(imageCv, imageBgr, cv::COLOR_BGRA2BGR);
+        cv::cvtColor(imageCv, imageBgr, cv::COLOR_BGRA2BGR); //The Color of the receive image needs to be changed 
         
         convert_finish = std::chrono::high_resolution_clock::now();
-        //when resizing should be done before ingesting images into yolov5tensorrt library
+        //when resizing should be done before ingesting images into yolov5tensorrt 
         //cv::resize(imageBgr, smallerImageBgr, cv::Size(640,640));
         std::vector<yolov5::Detection> detections;
                 
-        yolov5::Result resu= detector.detect(imageBgr, &detections, yolov5::INPUT_BGR);
+        yolov5::Result resu= detector.detect(imageBgr, &detections, yolov5::INPUT_BGR); //places the detections inside detections
         if(resu!= yolov5::RESULT_SUCCESS)
         {
                 std::cout << "yolov5 detect() failed: " << yolov5::result_to_string(resu) 
@@ -4977,7 +4977,7 @@ void ZEDWrapperNodelet::ingestImages()
                 tmp.unique_object_id = sl::generate_unique_id();
                 tmp.probability = object.score();
                 tmp.label = (int) object.classId();
-                tmp.bounding_box_2d = cvt(imageBgr,object.boundingBox());
+                tmp.bounding_box_2d = cvt(imageBgr,object.boundingBox());//converts the bounding box
                 tmp.is_grounded = true; //Everything here is grunded since we only track humans and robots
                 objects_in.push_back(tmp);
             }

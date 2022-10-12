@@ -1,0 +1,9 @@
+path: ../datasets/Dataset_Robots_Humans
+
+train: train.txt
+val: val.txt
+test: test.txt 
+
+# Classes
+nc: 4
+names: ['kuka','human','tiago','pepper']

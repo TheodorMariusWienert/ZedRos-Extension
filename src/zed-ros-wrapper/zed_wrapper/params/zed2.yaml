@@ -35,3 +35,4 @@ object_detection:
     mc_sport:                   false            # Enable/disable the detection of sport-related objects for 'MULTI_CLASS_BOX_X' models
     engine_path:                /home/theubuntu/ZedRos_CustomDetection/src/bestFp16.engine #Enter the full engine Path here
     floor_is_even:              true
+    customClassesNames:         ["kuka","human","tiago","pepper"] #Enter the names of classes here

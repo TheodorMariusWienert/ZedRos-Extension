@@ -738,7 +738,11 @@ private:
     //Custom detection
     yolov5::Detector detector;
     CUcontext cuContext;
-     std::vector<std::string> customClasses = { "kuka","human","tiago","pepper" };
+
+    //clases to detect these need to be adjusted if other classes shold be detected with an other engine
+    std::vector<std::string> customClasses = {};
+
+
     std::string mEnginePath;
     double timeForDetection[9][1000];//Times 0 total Time, 1 Time to detect and ingest,
     size_t timestamp_idx = 0;
@@ -747,7 +751,8 @@ private:
    
 
    //For time recording
-    bool recordTimes=true;
+    std::string pathFileForTimes = "/home/theubuntu/ZedRos_CustomDetection/YoloV5 ResultsonTest/Retrieve+Ingest+Message+Publish/timesForDetection.txt";
+    bool recordTimes=false;
     std::chrono::high_resolution_clock::time_point ingest_detect_total_start;
     std::chrono::high_resolution_clock::time_point ingest_detect_total_finish;
     std::chrono::high_resolution_clock::time_point retrieve_start;
@@ -758,10 +763,13 @@ private:
     std::chrono::high_resolution_clock::time_point retrieve_3d_objects;
     std::chrono::high_resolution_clock::time_point ros_Message_start;
     sl::Timestamp  timestamp_img;
-    sl::Translation translation;
-    bool initMats=true;
-    bool mFloorIsEven = false;
 
+    //If floor is even this gets setted to true by parameters
+    bool mFloorIsEven = false;
+    sl::Translation translation;
+    
+    // The matrixes for the images
+    bool initMats=true;
     sl::Mat left_sl;
     cv::Mat imageCv;
     cv::Mat imageBgr;

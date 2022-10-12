@@ -1,21 +1,21 @@
 This work is an extension of the [zed-ros-wrapper](https://github.com/stereolabs/zed-ros-wrapper).
 It is now possible to use a custom [YOLOv5](https://github.com/ultralytics/yolov5) Model to detect all classes the YOLOv5 model was trained on.
-It archieves that by using the [YOLOv5-TensorRT](https://github.com/noahmr/yolov5-tensorrt), many thanks to the author.
+It achieves that by using the [YOLOv5-TensorRT](https://github.com/noahmr/yolov5-tensorrt), many thanks to the author.
 
-How the extension was implemented is based on [ZED-YOLOv5]( https://github.com/noahmr/zed-yolov5) and [Yolov5 with ZED Custom Box input](https://github.com/stereolabs/zed-examples/tree/master/object%20detection/custom%20detector/cpp/tensorrt_yolov5_v6.0=
+How the extension was implemented is based on [ZED-YOLOv5]( https://github.com/noahmr/zed-yolov5) and [Yolov5 with ZED Custom Box input](https://github.com/stereolabs/zed-examples/tree/master/object%20detection/custom%20detector/cpp/tensorrt_yolov5_v6.0=)
 
 
 
-To install this package you need first to install the following libaries:
+To install this package you need first to install the following libraries:
 
-##Libraries needed
+## Libraries needed
 - Cuda >10.02
 - Tensorrt  > 8
 - OpenCV (when possible wiht CUDA)
 - yolov5-tensorrt
 - ZED SDK
 - Ros Noetic
-## It was tested with these libaries instaled
+## Tested with these libraries installed
 - Cuda 11.7
 - Tensorrt  8.4.2-1
 - OpenCV with Cuda
@@ -24,7 +24,7 @@ To install this package you need first to install the following libaries:
 - Ros Noetic
 
 And a ZED2 was used. Further a YOLOv5s model was use as a FP16 and FP32 TensorRT Engine.
-
+## Installation
 To install this project you need to do the following (analog to [instructions](https://www.stereolabs.com/docs/ros/) given by stereolabs):
 ```
   cd ~/catkin_ws/src
@@ -42,13 +42,19 @@ To use your custom Yolov5 model you need to either export it to a FP32 engine wi
 
 
 To start the programm  use:
-$ roslaunch zed_wrapper zed2.launch
+```
+ roslaunch zed_wrapper zed2.launch
+ ```
 For visulaization use:
-$ roslaunch zed_display_rviz display_zed2.launch
+```
+roslaunch zed_display_rviz display_zed2.launch
+```
 
-##For Time recording
-To record times you need to eddit zed_wrapper_nodelet.hpp and edit the pathFile and also set time recording to true
-To record times at subscriber site you need to edit the  zed_obj_det_sub and change the bools to true also set the path according to your paths
-To process the objects a numerous of Jupyter notebooks are in the Jupyter notebooks folder
+To see how the [zed-ros-wrapper](https://github.com/stereolabs/zed-ros-wrapper) see this page of [stereolabs](https://www.stereolabs.com/docs/ros/)
+## To record execution times and at subscriber site latencie:
+To record times you need to edit zed_wrapper_nodelet.hpp and edit the pathVariable there and also set time to recording to true
+To record times at subscriber site you need to edit the  zed_obj_det_sub and change the bools to true also set the path according to your preferences(The positional data which the subscriber receives can also be recorded and saved to a file)
+To process the time and positions objects a numerous of Jupyter notebooks are in the Jupyter notebooks folder
+If the time recording is not needed all timestamps can be delted in zed_wrapper_nodelet.cpp
 
-To use GPU MATS use the branch GPU Mat, CV with CUDA needs to be installed, this was not tested really much use with care
+The Data I recorded can also be seen in TestData

@@ -36,7 +36,7 @@ double timeForDetection[2][1000];//Time from image capture
 double posData[5][300];
 int idx_toStart=0;
 int idx=0;
-bool timeRecording=true;
+bool timeRecording=false;
 bool posDataRecording=false;
 ros::Time lastStamp;
 
