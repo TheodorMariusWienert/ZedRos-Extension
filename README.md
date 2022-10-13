@@ -22,6 +22,7 @@ To install this package you need first to install the following libraries:
 - yolov5-tensorrt
 - ZED SDK 3.7 version
 - Ros Noetic
+- Linux 20.04
 
 And a ZED2 was used. Further a YOLOv5s model was use as a FP16 and FP32 TensorRT Engine.
 ## Installation
