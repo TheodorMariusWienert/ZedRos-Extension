@@ -1,6 +1,6 @@
 This work is an extension of the [zed-ros-wrapper](https://github.com/stereolabs/zed-ros-wrapper).
 It is now possible to use a custom [YOLOv5](https://github.com/ultralytics/yolov5) model to detect all classes the YOLOv5 model was trained on.
-It achieves that by using the [YOLOv5-TensorRT](https://github.com/noahmr/yolov5-tensorrt), many thanks to the author.
+It achieves that by using [YOLOv5-TensorRT](https://github.com/noahmr/yolov5-tensorrt), many thanks to the author.
 
 The extension was implemented with the help of [ZED-YOLOv5]( https://github.com/noahmr/zed-yolov5) and [Yolov5 with ZED Custom Box input](https://github.com/stereolabs/zed-examples/tree/master/object%20detection/custom%20detector/cpp/tensorrt_yolov5_v6.0)
 
