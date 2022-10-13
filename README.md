@@ -49,7 +49,10 @@ For visulaization use:
 ```
 roslaunch zed_display_rviz display_zed2.launch
 ```
-
+To start the modified subscriber from the [zed-ros-examplse](https://github.com/stereolabs/zed-ros-examples)
+```
+rosrun zed_obj_det_sub_tutorial zed_obj_det_sub objects:=/zed2/zed_node/obj_det/objects
+```
 To see how the [zed-ros-wrapper](https://github.com/stereolabs/zed-ros-wrapper) works, see this page of [stereolabs](https://www.stereolabs.com/docs/ros/)
 ## To record execution times and at subscriber site latencie:
 To record times you need to edit zed_wrapper_nodelet.hpp and edit the pathVariable there and also set time to recording to true
